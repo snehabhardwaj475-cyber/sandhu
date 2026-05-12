@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlashUSDT — Instant Crypto Transfers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00C896;
+      --green-light: #E6FBF5;
+      --green-dark: #009970;
+      --navy: #0D1F2D;
+      --gray: #6B7585;
+      --light: #F7F9FC;
+      --white: #ffffff;
+      --border: #E2E8F0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.3rem;
+      color: var(--navy);
+    }
+    .logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--gray);
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-cta {
+      background: var(--green); color: white;
+      padding: 0.5rem 1.4rem; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: 0.9rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .nav-cta:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 80px 5% 60px;
+      background: linear-gradient(145deg, #f0fdf9 0%, #ffffff 50%, #f0f4ff 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,200,150,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--green-light); color: var(--green-dark);
+      padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; margin-bottom: 1.2rem;
+      border: 1px solid rgba(0,200,150,0.3);
+    }
+    .badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+    h1 .highlight {
+      color: var(--green);
+      position: relative;
+    }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--gray);
+      line-height: 1.7; margin-bottom: 2rem; max-width: 480px;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--green); color: white;
+      padding: 0.85rem 2rem; border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: 0.95rem;
+      transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,200,150,0.3);
+    }
+    .btn-primary:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,200,150,0.35); }
+    .btn-ghost {
+      color: var(--navy); padding: 0.85rem 2rem;
+      border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: 0.95rem;
+      border: 1.5px solid var(--border);
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+
+    /* HERO CARD */
+    .hero-card {
+      background: white; border-radius: 20px;
+      padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+      animation: floatCard 4s ease-in-out infinite;
+    }
+    @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .card-live {
+      background: var(--green-light); color: var(--green-dark);
+      font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.6rem;
+      border-radius: 100px; letter-spacing: 0.05em;
+    }
+    .amount-display {
+      text-align: center; padding: 1.5rem 0;
+      border: 1.5px dashed var(--border); border-radius: 12px; margin-bottom: 1.5rem;
+    }
+    .amount-label { font-size: 0.75rem; color: var(--gray); margin-bottom: 0.3rem; }
+    .amount-value {
+      font-family: 'Syne', sans-serif; font-size: 2.4rem;
+      font-weight: 800; color: var(--green); letter-spacing: -0.03em;
+    }
+    .amount-sub { font-size: 0.8rem; color: var(--gray); }
+    .card-row {
+      display: flex; justify-content: space-between;
+      padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .card-row:last-of-type { border-bottom: none; }
+    .card-row span:first-child { color: var(--gray); }
+    .card-row span:last-child { font-weight: 600; }
+    .card-row .green { color: var(--green); }
+    .send-btn {
+      width: 100%; background: var(--green); color: white;
+      border: none; padding: 0.9rem; border-radius: 10px;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer;
+      margin-top: 1.2rem; transition: background 0.2s;
+      font-family: 'Syne', sans-serif;
+    }
+    .send-btn:hover { background: var(--green-dark); }
+
+    /* STATS */
+    .stats {
+      padding: 4rem 5%;
+      background: var(--navy);
+    }
+    .stats-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif; font-size: 2rem;
+      font-weight: 800; color: var(--green); margin-bottom: 0.3rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.55); font-size: 0.85rem; }
+
+    /* FEATURES */
+    .features {
+      padding: 5rem 5%;
+      background: var(--light);
+    }
+    .section-tag {
+      font-size: 0.78rem; font-weight: 700; color: var(--green);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.7rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800; margin-bottom: 0.8rem; letter-spacing: -0.02em;
+    }
+    .section-sub { color: var(--gray); max-width: 540px; line-height: 1.7; margin-bottom: 3rem; }
+    .features-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .feature-card {
+      background: white; border-radius: 16px; padding: 1.8rem;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--green-light); display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; margin-bottom: 1.2rem;
+    }
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.05rem; margin-bottom: 0.5rem;
+    }
+    .feature-card p { color: var(--gray); font-size: 0.88rem; line-height: 1.65; }
+
+    /* HOW IT WORKS */
+    .how {
+      padding: 5rem 5%;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+      position: relative; margin-top: 3rem;
+    }
+    .steps::before {
+      content: '';
+      position: absolute; top: 28px; left: 10%; right: 10%;
+      height: 2px; background: linear-gradient(to right, var(--green), transparent);
+      z-index: 0;
+    }
+    .step { text-align: center; position: relative; z-index: 1; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green); color: white;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 16px rgba(0,200,150,0.35);
+    }
+    .step h4 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.95rem; margin-bottom: 0.4rem;
+    }
+    .step p { color: var(--gray); font-size: 0.82rem; line-height: 1.5; }
+
+    /* CTA */
+    .cta-section {
+      margin: 0 5% 5rem;
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a50 100%);
+      border-radius: 24px; padding: 4rem;
+      text-align: center; color: white;
+      position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; top: -50px; right: -50px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(0,200,150,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cta-section h2 {
+      font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800; margin-bottom: 1rem; position: relative; z-index: 1;
+    }
+    .cta-section p {
+      color: rgba(255,255,255,0.65); max-width: 500px;
+      margin: 0 auto 2rem; line-height: 1.7; position: relative; z-index: 1;
+    }
+    .cta-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; position: relative; z-index: 1; }
+    .btn-white {
+      background: white; color: var(--navy);
+      padding: 0.85rem 2rem; border-radius: 10px;
+      text-decoration: none; font-weight: 700; font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .btn-outline-white {
+      border: 1.5px solid rgba(255,255,255,0.35); color: white;
+      padding: 0.85rem 2rem; border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .btn-outline-white:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+    /* FOOTER */
+    footer {
+      background: var(--navy); color: rgba(255,255,255,0.45);
+      text-align: center; padding: 2rem 5%;
+      font-size: 0.82rem; border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    footer span { color: var(--green); }
+
+    /* SCROLL ANIMATION */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .stats-inner { grid-template-columns: repeat(2,1fr); }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2,1fr); }
+      .steps::before { display: none; }
+      .nav-links { display: none; }
+      .cta-section { padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Flash<span>USDT</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Get Started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="badge">Live Network Active</div>
+      <h1>Send USDT<br><span class="highlight">Instantly</span><br>Anywhere.</h1>
+      <p class="hero-sub">FlashUSDT lets you transfer Tether (USDT) at lightning speed across TRC20, ERC20, and BEP20 networks — securely and with near-zero fees.</p>
+      <div class="hero-btns">
+        <a href="#" class="btn-primary">⚡ Flash Transfer Now</a>
+        <a href="#how" class="btn-ghost">See How It Works</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="card-header">
+        <span class="card-title">Flash Transfer</span>
+        <span class="card-live">● LIVE</span>
+      </div>
+      <div class="amount-display">
+        <div class="amount-label">Amount to Send</div>
+        <div class="amount-value">1,000 <small style="font-size:1rem">USDT</small></div>
+        <div class="amount-sub">≈ $1,000.00 USD</div>
+      </div>
+      <div class="card-row"><span>Network</span><span>TRC20 (TRON)</span></div>
+      <div class="card-row"><span>Fee</span><span class="green">~$0.002</span></div>
+      <div class="card-row"><span>Speed</span><span class="green">⚡ &lt; 3 seconds</span></div>
+      <div class="card-row"><span>Status</span><span class="green">● Confirmed</span></div>
+      <button class="send-btn">⚡ Send Flash USDT</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-inner">
+    <div class="reveal">
+      <div class="stat-num">$2.4B+</div>
+      <div class="stat-label">Total Volume Transferred</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">850K+</div>
+      <div class="stat-label">Active Users</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">&lt;3s</div>
+      <div class="stat-label">Average Transfer Time</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">99.98%</div>
+      <div class="stat-label">Uptime Guarantee</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-tag">Why FlashUSDT</div>
+    <h2 class="section-title">Built for Speed.<br>Designed for Trust.</h2>
+    <p class="section-sub">Everything you need for seamless, instant USDT transfers across major blockchain networks.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Settlement</h3>
+        <p>Transfers confirmed in under 3 seconds on TRC20 network — faster than any traditional payment method.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔒</div>
+        <h3>Bank-Grade Security</h3>
+        <p>End-to-end encryption, multi-sig wallets, and real-time fraud detection keep your funds safe 24/7.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🌐</div>
+        <h3>Multi-Network Support</h3>
+        <p>Send across TRC20, ERC20, and BEP20 seamlessly. Choose the best network for your needs.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">💸</div>
+        <h3>Near-Zero Fees</h3>
+        <p>Pay as little as $0.002 per transaction. No hidden fees, no monthly charges — ever.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📊</div>
+        <h3>Real-Time Tracking</h3>
+        <p>Monitor every transaction live on the blockchain. Full transparency with instant confirmations.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🤝</div>
+        <h3>24/7 Support</h3>
+        <p>Our dedicated crypto support team is always online to help resolve any issues instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-tag">Simple Process</div>
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub">Send USDT in 4 easy steps — no complicated setup required.</p>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <h4>Connect Wallet</h4>
+      <p>Link your crypto wallet or enter recipient address manually.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <h4>Enter Amount</h4>
+      <p>Type in how much USDT you want to send.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <h4>Choose Network</h4>
+      <p>Select TRC20, ERC20, or BEP20 based on your preference.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">4</div>
+      <h4>Flash Transfer</h4>
+      <p>Hit send and your USDT arrives in seconds. Done!</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <h2>Ready to Flash Transfer USDT?</h2>
+  <p>Join over 850,000 users who trust FlashUSDT for fast, secure, low-cost transfers every day.</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-white">⚡ Start Sending Now</a>
+    <a href="#" class="btn-outline-white">Contact Support</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>FlashUSDT</span>. All rights reserved. | Not financial advice. Use at your own risk.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
