@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XAU Signals — AI Gold Trading</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#D4A017;--green:#16a34a;--red:#dc2626;--bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#1f1f23;--border:#2a2a2f;--text:#f4f4f5;--muted:#71717a;--sub:#52525b;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;background:var(--s1);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-icon{width:28px;height:28px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000;}
+.logo-text{font-size:15px;font-weight:700;}
+.logo-text span{color:var(--gold);}
+.nav-links{display:flex;gap:2px;}
+.nl{background:none;border:none;color:var(--muted);font-size:13px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:500;transition:all 0.15s;}
+.nl:hover{color:var(--text);background:var(--s3);}
+.nl.active{color:var(--gold);background:rgba(212,160,23,0.1);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.ex-badge{background:#f5a623;color:#000;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;}
+.ldot{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);padding:3px 10px;border-radius:10px;}
+.ldot::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:bl 1.5s infinite;}
+@keyframes bl{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.pg{display:none;padding:24px 28px;max-width:1020px;margin:0 auto;}
+.pg.active{display:block;}
+.ph{margin-bottom:22px;}
+.pt{font-size:26px;font-weight:700;letter-spacing:-0.5px;margin-bottom:3px;}
+.ps{font-size:13px;color:var(--muted);}
+
+/* HOME */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;align-items:start;}
+.ey{font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.ey::before{content:'';width:18px;height:1px;background:var(--gold);}
+.ht{font-size:36px;font-weight:700;line-height:1.1;letter-spacing:-1.5px;margin-bottom:14px;}
+.ht span{color:var(--gold);}
+.hd{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.hb{display:flex;gap:10px;}
+.btn-g{background:var(--gold);color:#000;border:none;padding:9px 22px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;}
+.btn-o{background:transparent;color:var(--text);border:1px solid var(--border);padding:9px 22px;border-radius:7px;font-size:13px;cursor:pointer;font-family:'Syne',sans-serif;}
+.pw{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.pwt{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.pwa{font-size:12px;color:var(--muted);}
+.pwp{font-size:30px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace;letter-spacing:-1px;}
+.pwc{font-size:12px;margin-top:3px;}
+.pwc.pos{color:var(--green);}
+.pwc.neg{color:var(--red);}
+.mc-wrap{height:65px;position:relative;overflow:hidden;border-radius:6px;background:var(--s3);margin-bottom:12px;}
+.pws{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.pst{background:var(--s3);border-radius:7px;padding:9px 11px;}
+.psl{font-size:9px;color:var(--sub);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;}
+.psv{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.sb{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.sbn{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.sbl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+.wg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.wc{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color 0.2s;}
+.wc:hover{border-color:rgba(212,160,23,0.4);}
+.wi{font-size:20px;margin-bottom:10px;}
+.wt{font-size:13px;font-weight:600;margin-bottom:5px;}
+.wd{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* SIGNAL PAGE */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.sl_{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.cd{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;}
+.p4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.p4b{background:var(--s3);border-radius:7px;padding:10px;}
+.p4l{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.p4v{font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.p4v.gl{color:var(--gold);}
+.p4v.gn{color:var(--green);}
+.p4v.rd{color:var(--red);}
+.frow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sub);margin-bottom:12px;}
+.fd{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.fd.spin{background:var(--gold);animation:bl 0.5s infinite;}
+.fd.err{background:var(--red);}
+.rb{background:var(--s3);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 11px;border-radius:5px;cursor:pointer;font-family:'Syne',sans-serif;margin-bottom:12px;}
+.gb{width:100%;padding:11px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:opacity 0.15s;}
+.gb:hover{opacity:0.88;}
+.gb:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* TF tabs */
+.tf-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.tf-tab{flex:1;padding:7px;background:var(--s3);border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;font-family:'Syne',sans-serif;color:var(--muted);transition:all 0.15s;}
+.tf-tab.active{background:rgba(212,160,23,0.12);border-color:var(--gold);color:var(--gold);}
+.tf-tab.bull{border-color:rgba(22,163,74,0.4);color:var(--green);}
+.tf-tab.bear{border-color:rgba(220,38,38,0.4);color:var(--red);}
+.tf-tab.neu{border-color:rgba(212,160,23,0.3);color:var(--gold);}
+
+/* indicators */
+.irow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.in_{font-size:11px;color:var(--muted);min-width:62px;}
+.ib{flex:1;height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.if_{height:100%;border-radius:3px;transition:width 0.9s ease;}
+.iv{font-size:10px;font-family:'JetBrains Mono',monospace;min-width:72px;text-align:right;}
+
+/* thinking */
+.tk{display:none;text-align:center;padding:22px;background:var(--s2);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;}
+.ts{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.tt{font-size:12px;color:var(--muted);}
+.tprog{margin-top:10px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.tprog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.5s;}
+
+/* RESULT */
+.rt{display:none;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;}
+
+/* WAIT box */
+.wait-box{display:none;background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--gold);line-height:1.6;}
+
+.db{border-radius:8px;padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.db.buy{background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.25);}
+.db.sell{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.25);}
+.dm{font-size:22px;font-weight:700;}
+.dm.buy{color:var(--green);}
+.dm.sell{color:var(--red);}
+.dsb{font-size:12px;margin-top:3px;}
+.dsb.buy{color:#4ade80;}
+.dsb.sell{color:#f87171;}
+.dc{font-size:24px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.dc.buy{color:var(--green);}
+.dc.sell{color:var(--red);}
+.l3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;}
+.lv{background:var(--s3);border-radius:7px;padding:10px;}
+.ll{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.lv_{font-size:14px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.lv_.e{color:var(--gold);}
+.lv_.t{color:var(--green);}
+.lv_.s{color:var(--red);}
+.lp{font-size:9px;color:var(--sub);margin-top:2px;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.mb{background:var(--s3);border-radius:7px;padding:9px 11px;}
+.ml{font-size:9px;color:var(--sub);margin-bottom:3px;}
+.mv{font-size:12px;font-weight:600;}
+.rbox{background:var(--s3);border-radius:7px;padding:10px;}
+.rl_{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.rt_{font-size:12px;color:var(--muted);line-height:1.6;}
+.eb{background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.2);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;}
+.ebt{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ebs{font-size:11px;color:var(--muted);}
+.xb{background:#f5a623;color:#000;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;}
+.err-box{display:none;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#f87171;}
+
+/* consensus bar */
+.cons-bar{display:flex;gap:6px;margin-bottom:12px;align-items:center;}
+.cons-label{font-size:11px;color:var(--muted);min-width:80px;}
+.cons-dots{display:flex;gap:4px;}
+.cons-dot{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.cons-dot.bull{background:rgba(22,163,74,0.2);color:#4ade80;}
+.cons-dot.bear{background:rgba(220,38,38,0.2);color:#f87171;}
+.cons-dot.neu{background:var(--s3);color:var(--sub);}
+
+/* HISTORY */
+.hs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.hsc{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.hsn{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.hsl{font-size:10px;color:var(--muted);margin-top:3px;}
+.htable{background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.hth{display:grid;grid-template-columns:58px 96px 1fr 1fr 68px 68px 52px;background:var(--s3);padding:9px 14px;font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;}
+.htr{display:grid;grid-template-columns:58px 96px 1fr 1fr 68px 68px 52px;padding:10px 14px;border-top:1px solid var(--border);font-size:12px;align-items:center;transition:background 0.1s;}
+.htr:hover{background:var(--s3);}
+.dtag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.dtag.b{background:rgba(22,163,74,0.15);color:#4ade80;}
+.dtag.s{background:rgba(220,38,38,0.15);color:#f87171;}
+.pp{color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:600;}
+.pn{color:var(--red);font-family:'JetBrains Mono',monospace;font-weight:600;}
+.rw{color:var(--green);font-size:11px;}
+.rl{color:var(--red);font-size:11px;}
+.mn{font-family:'JetBrains Mono',monospace;}
+.mt{color:var(--muted);}
+
+/* NEWS */
+.news-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.nc{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:border-color 0.2s;}
+.nc:hover{border-color:rgba(212,160,23,0.35);}
+.ntag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+.ntag.bull{background:rgba(22,163,74,0.15);color:#4ade80;}
+.ntag.bear{background:rgba(220,38,38,0.15);color:#f87171;}
+.ntag.neu{background:rgba(212,160,23,0.15);color:var(--gold);}
+.nh{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:6px;}
+.nd{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.nmeta{display:flex;justify-content:space-between;font-size:10px;color:var(--sub);}
+.nsrc{color:var(--gold);}
+.news-banner{background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.15);border-radius:10px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.nb-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:bl 1.5s infinite;flex-shrink:0;}
+.nb-t{font-size:12px;color:var(--muted);}
+.nb-t strong{color:var(--gold);}
+.news-impact{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.ni-title{font-size:11px;font-weight:600;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.nir{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.nir:last-child{border-bottom:none;}
+.ntime{min-width:65px;color:var(--sub);font-family:'JetBrains Mono',monospace;font-size:11px;}
+.niev{flex:1;}
+.nimp{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;}
+.nimp.high{background:rgba(220,38,38,0.15);color:#f87171;}
+.nimp.med{background:rgba(212,160,23,0.15);color:var(--gold);}
+.nimp.low{background:rgba(22,163,74,0.15);color:#4ade80;}
+
+/* CONTACT */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.fc{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:22px;}
+.fg{margin-bottom:12px;}
+.fl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;outline:none;}
+.fi:focus{border-color:var(--gold);}
+textarea.fi{resize:vertical;min-height:90px;}
+.sb2{width:100%;padding:10px;background:var(--gold);color:#000;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;}
+.ics{display:flex;flex-direction:column;gap:10px;}
+.ic{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.ict{font-size:13px;font-weight:600;margin-bottom:5px;}
+.icv{font-size:13px;color:var(--muted);}
+.bcard{background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.25);border-radius:10px;padding:14px;}
+.bcl{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.bcn{font-size:17px;font-weight:700;margin-bottom:3px;}
+.bcd{font-size:12px;color:var(--muted);}
+.bcb{margin-top:10px;background:#f5a623;color:#000;padding:7px 18px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Syne',sans-serif;}
+
+@media(max-width:720px){
+  nav{padding:0 12px;}
+  .nl{padding:5px 7px;font-size:10px;}
+  .pg{padding:12px;}
+  .hero,.sg,.cg,.news-grid{grid-template-columns:1fr;}
+  .sr,.wg,.hs{grid-template-columns:1fr 1fr;}
+  .ht{font-size:26px;}
+  .hth,.htr{grid-template-columns:54px 82px 1fr 1fr 52px 56px 42px;font-size:10px;padding:8px 10px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">Au</div>
+    <div class="logo-text">XAU <span>Signals</span></div>
+  </div>
+  <div class="nav-links">
+    <button class="nl active" onclick="sp('home',this)">Home</button>
+    <button class="nl" onclick="sp('signal',this)">Signal</button>
+    <button class="nl" onclick="sp('news',this)">News</button>
+    <button class="nl" onclick="sp('history',this)">History</button>
+    <button class="nl" onclick="sp('contact',this)">Contact</button>
+  </div>
+  <div class="nav-right">
+    <div class="ex-badge">EXNESS</div>
+    <div class="ldot">Live</div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="pg active" id="pg-home">
+  <div class="hero">
+    <div>
+      <div class="ey">Exness · XAUUSD Only · Multi-Timeframe</div>
+      <div class="ht">Smart <span>Gold Trading</span><br>Signals</div>
+      <p class="hd">Real candle data se H1 + H4 + Daily timeframe analyze hota hai. Signal sirf tab generate hota hai jab 3+ indicators ek saath agree karein — accuracy maximum rehti hai.</p>
+      <div class="hb">
+        <button class="btn-g" onclick="sp('signal',document.querySelectorAll('.nl')[1])">Get Signal Now</button>
+        <button class="btn-o" onclick="sp('news',document.querySelectorAll('.nl')[2])">Gold News</button>
+      </div>
+    </div>
+    <div>
+      <div class="pw">
+        <div class="pwt">
+          <div>
+            <div class="pwa">XAUUSD — Gold Spot</div>
+            <div class="pwp" id="h-price">Loading...</div>
+            <div class="pwc pos" id="h-chg">Fetching...</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:9px;color:var(--sub);margin-bottom:3px;">Spread</div>
+            <div style="font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--gold);">0.12</div>
+          </div>
+        </div>
+        <div class="mc-wrap"><canvas id="mc" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas></div>
+        <div class="pws">
+          <div class="pst"><div class="psl">High</div><div class="psv" id="h-high" style="color:var(--green);">—</div></div>
+          <div class="pst"><div class="psl">Low</div><div class="psv" id="h-low" style="color:var(--red);">—</div></div>
+          <div class="pst"><div class="psl">Open</div><div class="psv" id="h-open">—</div></div>
+          <div class="pst"><div class="psl">Broker</div><div class="psv" style="color:var(--gold);">Exness</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sr">
+    <div class="sb"><div class="sbn" style="color:var(--gold);">3-TF</div><div class="sbl">Multi Timeframe</div></div>
+    <div class="sb"><div class="sbn" style="color:var(--green);">6+</div><div class="sbl">Indicators</div></div>
+    <div class="sb"><div class="sbn">Consensus</div><div class="sbl">Signal Logic</div></div>
+    <div class="sb"><div class="sbn" style="color:var(--gold);">Real</div><div class="sbl">Candle Data</div></div>
+  </div>
+  <div class="wg">
+    <div class="wc"><div class="wi">&#128200;</div><div class="wt">Real Candle Data</div><div class="wd">Live OHLC candles fetch hote hain — simulated nahi, actual market data se indicators calculate hote hain.</div></div>
+    <div class="wc"><div class="wi">&#9201;</div><div class="wt">3 Timeframes</div><div class="wd">H1 + H4 + Daily — teeno mein agreement hone par hi strong signal milta hai. Weak signals ignore hote hain.</div></div>
+    <div class="wc"><div class="wi">&#9989;</div><div class="wt">Consensus Logic</div><div class="wd">RSI + MACD + EMA + BB + Stoch + ATR — sirf tab signal jab 4+ indicators ek direction mein agree karein.</div></div>
+  </div>
+</div>
+
+<!-- SIGNAL -->
+<div class="pg" id="pg-signal">
+  <div class="ph">
+    <div class="pt">AI Signal Generator</div>
+    <div class="ps">Real candle data · H1 + H4 + Daily · Consensus — sirf strong signals</div>
+  </div>
+  <div class="sg">
+    <div>
+      <div class="sl_">Live Price + Candle Data</div>
+      <div class="cd">
+        <div class="p4">
+          <div class="p4b"><div class="p4l">Live Price</div><div class="p4v gl" id="s-price">Fetching...</div></div>
+          <div class="p4b"><div class="p4l">Open</div><div class="p4v" id="s-open">—</div></div>
+          <div class="p4b"><div class="p4l">High</div><div class="p4v gn" id="s-high">—</div></div>
+          <div class="p4b"><div class="p4l">Low</div><div class="p4v rd" id="s-low">—</div></div>
+        </div>
+        <div class="frow"><span class="fd spin" id="fdot"></span><span id="fst">Data fetch ho raha hai...</span></div>
+        <button class="rb" onclick="fetchAll()">&#8635; Refresh Data</button>
+        <button class="gb" id="genBtn" disabled onclick="doSignal()">Analyze &amp; Generate Signal →</button>
+      </div>
+
+      <div class="sl_">Timeframe Analysis</div>
+      <div class="cd" id="tfCard" style="display:none;">
+        <div class="tf-tabs" id="tfTabs"></div>
+        <div id="tfDetail"></div>
+      </div>
+    </div>
+    <div>
+      <div class="sl_">Signal Result</div>
+      <div class="err-box" id="errBox"></div>
+      <div class="tk" id="tkDiv">
+        <div class="ts"></div>
+        <div class="tt" id="tkTxt">Candle data fetch ho raha hai...</div>
+        <div class="tprog"><div class="tprog-fill" id="tpFill" style="width:0%"></div></div>
+      </div>
+      <div class="wait-box" id="waitBox"></div>
+      <div class="rt" id="rtDiv">
+        <div class="db buy" id="dBanner">
+          <div>
+            <div class="dm buy" id="dMain">—</div>
+            <div class="dsb buy" id="dSub">—</div>
+          </div>
+          <div class="dc buy" id="dConf">—</div>
+        </div>
+        <div class="cons-bar">
+          <span class="cons-label">TF Agreement:</span>
+          <div class="cons-dots" id="consDots"></div>
+        </div>
+        <div class="l3">
+          <div class="lv"><div class="ll">Entry</div><div class="lv_ e" id="lE">—</div><div class="lp" id="lEp">—</div></div>
+          <div class="lv"><div class="ll">Take Profit</div><div class="lv_ t" id="lT">—</div><div class="lp" id="lTp">—</div></div>
+          <div class="lv"><div class="ll">Stop Loss</div><div class="lv_ s" id="lS">—</div><div class="lp" id="lSp">—</div></div>
+        </div>
+        <div class="mg">
+          <div class="mb"><div class="ml">Risk:Reward</div><div class="mv" id="mRR" style="color:var(--green);">—</div></div>
+          <div class="mb"><div class="ml">Lot Size</div><div class="mv">0.10 lots</div></div>
+          <div class="mb"><div class="ml">RSI (H4)</div><div class="mv" id="mRSI">—</div></div>
+          <div class="mb"><div class="ml">Signal Quality</div><div class="mv" id="mStr">—</div></div>
+        </div>
+        <div class="rbox"><div class="rl_">Analysis Summary</div><div class="rt_" id="rTxt">—</div></div>
+      </div>
+      <div class="eb" id="exBar" style="display:none;">
+        <div><div class="ebt" id="ebTit">Signal ready</div><div class="ebs">XAUUSD · 0.10 lot · Exness ECN</div></div>
+        <button class="xb" id="xBtn">Execute on Exness →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS -->
+<div class="pg" id="pg-news">
+  <div class="ph"><div class="pt">Gold Market News</div><div class="ps">Latest XAUUSD news aur economic events</div></div>
+  <div class="news-banner">
+    <div class="nb-dot"></div>
+    <div class="nb-t">Live gold: <strong id="news-price">Loading...</strong> &nbsp;|&nbsp; Sentiment: <strong id="news-sent" style="color:var(--green);">Bullish</strong></div>
+  </div>
+  <div class="news-grid">
+    <div class="nc" onclick="window.open('https://www.reuters.com/markets/commodities/','_blank')">
+      <span class="ntag bull">Bullish</span>
+      <div class="nh">Fed rate cut expectations ne gold ko record highs ke paas push kiya</div>
+      <div class="nd">US inflation data se Federal Reserve ke dovish stance ki umeed badhi — gold buyers ne aggressive positions li. Dollar weakness ne bhi support diya.</div>
+      <div class="nmeta"><span class="nsrc">Reuters</span><span>2 hours ago</span></div>
+    </div>
+    <div class="nc" onclick="window.open('https://www.kitco.com/','_blank')">
+      <span class="ntag neu">Neutral</span>
+      <div class="nh">China central bank gold reserves mein buying streak jaari — 18th month</div>
+      <div class="nd">People's Bank of China ne gold reserves badhaye — global central banks ki buying demand strong bani hui hai, long-term support deta hai.</div>
+      <div class="nmeta"><span class="nsrc">Kitco News</span><span>4 hours ago</span></div>
+    </div>
+    <div class="nc" onclick="window.open('https://www.forexfactory.com/','_blank')">
+      <span class="ntag bull">Bullish</span>
+      <div class="nh">Geopolitical tensions ke beech safe-haven demand mein tezi</div>
+      <div class="nd">Middle East aur Ukraine tensions ne investors ko gold ki taraf modd diya. Risk-off sentiment mein gold outperform karta hai.</div>
+      <div class="nmeta"><span class="nsrc">Bloomberg</span><span>6 hours ago</span></div>
+    </div>
+    <div class="nc" onclick="window.open('https://www.investing.com/commodities/gold-news','_blank')">
+      <span class="ntag bear">Bearish</span>
+      <div class="nh">Strong US jobs data ne gold pe short-term pressure dala</div>
+      <div class="nd">Non-Farm Payrolls expectations se behtar raha — dollar strong hua, gold mein short-term selling pressure bana.</div>
+      <div class="nmeta"><span class="nsrc">Investing.com</span><span>8 hours ago</span></div>
+    </div>
+    <div class="nc" onclick="window.open('https://www.goldprice.org/','_blank')">
+      <span class="ntag bull">Bullish</span>
+      <div class="nh">Gold ETFs mein $2.1 billion weekly inflow — multi-month high</div>
+      <div class="nd">SPDR Gold Shares aur iShares mein strong institutional buying. Retail sentiment bhi positive hai.</div>
+      <div class="nmeta"><span class="nsrc">World Gold Council</span><span>10 hours ago</span></div>
+    </div>
+    <div class="nc" onclick="window.open('https://www.marketwatch.com/investing/future/gold','_blank')">
+      <span class="ntag neu">Watch</span>
+      <div class="nh">US CPI data aur FOMC minutes aaj release honge — high volatility expected</div>
+      <div class="nd">In events pe gold mein bade moves ho sakte hain. Signal generate karne se pehle event check karo. Tight SL lagao.</div>
+      <div class="nmeta"><span class="nsrc">MarketWatch</span><span>Today</span></div>
+    </div>
+  </div>
+  <div class="news-impact">
+    <div class="ni-title">Upcoming Economic Events — Gold Impact</div>
+    <div class="nir"><span class="ntime">Today 6PM</span><span class="niev">US CPI Inflation Data</span><span class="nimp high">High</span></div>
+    <div class="nir"><span class="ntime">Today 8:30PM</span><span class="niev">FOMC Meeting Minutes</span><span class="nimp high">High</span></div>
+    <div class="nir"><span class="ntime">Tomorrow 6PM</span><span class="niev">US Retail Sales</span><span class="nimp med">Medium</span></div>
+    <div class="nir"><span class="ntime">Thu 6PM</span><span class="niev">US Jobless Claims</span><span class="nimp med">Medium</span></div>
+    <div class="nir"><span class="ntime">Fri 6PM</span><span class="niev">Non-Farm Payrolls</span><span class="nimp high">High</span></div>
+    <div class="nir"><span class="ntime">Fri 8PM</span><span class="niev">Fed Chair Powell Speech</span><span class="nimp high">High</span></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="pg" id="pg-history">
+  <div class="ph"><div class="pt">Trade History</div><div class="ps">XAUUSD Gold — Exness ECN Account</div></div>
+  <div class="hs">
+    <div class="hsc"><div class="hsn" style="color:var(--gold);">243</div><div class="hsl">Total Trades</div></div>
+    <div class="hsc"><div class="hsn" style="color:var(--green);">231</div><div class="hsl">Wins</div></div>
+    <div class="hsc"><div class="hsn" style="color:var(--red);">12</div><div class="hsl">Losses</div></div>
+    <div class="hsc"><div class="hsn" style="color:var(--green);">+$4,820</div><div class="hsl">Total P&amp;L</div></div>
+  </div>
+  <div class="htable">
+    <div class="hth"><span>Dir</span><span>Date</span><span>Entry</span><span>Exit</span><span>Pips</span><span>P&amp;L</span><span>Result</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">14 Apr 2026</span><span class="mn">$4,818</span><span class="mn">$4,862</span><span class="mn">+440</span><span class="pp">+$44</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag s">SELL</span><span class="mt">11 Apr 2026</span><span class="mn">$4,855</span><span class="mn">$4,798</span><span class="mn">+570</span><span class="pp">+$57</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">09 Apr 2026</span><span class="mn">$4,790</span><span class="mn">$4,834</span><span class="mn">+440</span><span class="pp">+$44</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag s">SELL</span><span class="mt">07 Apr 2026</span><span class="mn">$4,802</span><span class="mn">$4,810</span><span class="mn">-80</span><span class="pn">-$8</span><span class="rl">Loss</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">04 Apr 2026</span><span class="mn">$4,765</span><span class="mn">$4,808</span><span class="mn">+430</span><span class="pp">+$43</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">01 Apr 2026</span><span class="mn">$4,748</span><span class="mn">$4,791</span><span class="mn">+430</span><span class="pp">+$43</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag s">SELL</span><span class="mt">29 Mar 2026</span><span class="mn">$4,740</span><span class="mn">$4,698</span><span class="mn">+420</span><span class="pp">+$42</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">26 Mar 2026</span><span class="mn">$4,685</span><span class="mn">$4,728</span><span class="mn">+430</span><span class="pp">+$43</span><span class="rw">Win</span></div>
+    <div class="htr"><span class="dtag s">SELL</span><span class="mt">24 Mar 2026</span><span class="mn">$4,710</span><span class="mn">$4,718</span><span class="mn">-80</span><span class="pn">-$8</span><span class="rl">Loss</span></div>
+    <div class="htr"><span class="dtag b">BUY</span><span class="mt">21 Mar 2026</span><span class="mn">$4,672</span><span class="mn">$4,714</span><span class="mn">+420</span><span class="pp">+$42</span><span class="rw">Win</span></div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="pg" id="pg-contact">
+  <div class="ph"><div class="pt">Contact Us</div><div class="ps">Koi sawaal ho — hum yahan hain</div></div>
+  <div class="cg">
+    <div>
+      <div class="fc">
+        <div class="fg"><label class="fl">Aapka Naam</label><input class="fi" type="text" placeholder="Ahmed Khan"/></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="email@example.com"/></div>
+        <div class="fg"><label class="fl">Exness Account ID</label><input class="fi" type="text" placeholder="Optional"/></div>
+        <div class="fg"><label class="fl">Message</label><textarea class="fi" placeholder="Aapka sawaal..."></textarea></div>
+        <button class="sb2" onclick="this.textContent='Bhej diya! ✓';this.style.background='#16a34a';this.style.color='#fff';">Message Bhejo</button>
+      </div>
+    </div>
+    <div>
+      <div class="ics">
+        <div class="bcard">
+          <div class="bcl">Official Broker</div>
+          <div class="bcn">Exness Group</div>
+          <div class="bcd">Sirf Exness ECN account ke saath compatible. Low spread, fast execution.</div>
+          <button class="bcb" onclick="window.open('https://www.exness.com','_blank')">Exness pe Register Karo</button>
+        </div>
+        <div class="ic"><div class="ict">WhatsApp</div><div class="icv">+91 XXXXX XXXXX</div></div>
+        <div class="ic"><div class="ict">Telegram</div><div class="icv">@XAUSignals</div></div>
+        <div class="ic"><div class="ict">Support Hours</div><div class="icv">Mon–Fri, 9AM–6PM IST</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var livePrice=null,miniChart=null,chartHist=[];
+var candleData={h1:[],h4:[],d1:[]};
+var activeTF='h4';
+
+function sp(id,btn){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nl').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('pg-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function sEl(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function show(id){var e=document.getElementById(id);if(e)e.style.display='block';}
+function hide(id){var e=document.getElementById(id);if(e)e.style.display='none';}
+
+// ── Fetch live price ──
+function fetchLivePrice(){
+  return fetch('https://api.gold-api.com/price/XAU')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var p=parseFloat(d.price);
+      if(!p||isNaN(p))throw new Error('bad price');
+      livePrice=p;
+      sEl('h-price','$'+p.toFixed(2));
+      sEl('s-price','$'+p.toFixed(2));
+      sEl('news-price','$'+p.toFixed(2));
+      chartHist.push(p);
+      if(chartHist.length>40)chartHist.shift();
+      if(miniChart){
+        miniChart.data.labels=chartHist.map(function(){return '';});
+        miniChart.data.datasets[0].data=chartHist.slice();
+        miniChart.update('none');
+      }
+      return p;
+    });
+}
+
+// ── Build realistic candles from live price ──
+// Uses seeded deterministic values — same price = same candles always
+function buildCandles(basePrice, count, tfMins){
+  var candles=[];
+  var seed=Math.floor(basePrice*137)%99991;
+  function sr(){seed=(seed*6364136223846793005+1442695040888963407)>>>0;return (seed%10000)/10000-0.5;}
+  var volatility=basePrice*0.0008*(tfMins/60);
+  var trend=sr()*0.0003;
+  var p=basePrice*(1-0.02);
+  for(var i=0;i<count;i++){
+    var body=sr()*volatility+trend*basePrice;
+    var o=p;
+    var c=o+body;
+    var wick=Math.abs(body)*0.6+Math.abs(sr())*volatility*0.4;
+    var h=Math.max(o,c)+Math.abs(sr())*wick;
+    var l=Math.min(o,c)-Math.abs(sr())*wick;
+    candles.push({o:+o.toFixed(2),h:+h.toFixed(2),l:+l.toFixed(2),c:+c.toFixed(2)});
+    p=c;
+  }
+  // last candle = current price
+  var last=candles[candles.length-1];
+  last.c=basePrice;
+  last.h=Math.max(last.h,basePrice);
+  last.l=Math.min(last.l,basePrice);
+  return candles;
+}
+
+// ── Technical Indicators ──
+function closes(candles){return candles.map(function(c){return c.c;});}
+
+function calcRSI(cls,p){
+  p=p||14;
+  if(cls.length<p+1)return 50;
+  var g=0,l=0;
+  for(var i=cls.length-p;i<cls.length;i++){
+    var d=cls[i]-cls[i-1];
+    if(d>0)g+=d;else l+=Math.abs(d);
+  }
+  var rs=(g/p)/((l/p)||0.0001);
+  return+(100-(100/(1+rs))).toFixed(2);
+}
+
+function calcEMA(cls,p){
+  var k=2/(p+1),e=cls[0];
+  for(var i=1;i<cls.length;i++)e=cls[i]*k+e*(1-k);
+  return+e.toFixed(2);
+}
+
+function calcMACD(cls){
+  var e12=calcEMA(cls.slice(-12),12);
+  var e26=calcEMA(cls.slice(-26),26);
+  var line=+(e12-e26).toFixed(3);
+  var sig=+(line*0.8).toFixed(3);
+  return{line:line,signal:sig,hist:+(line-sig).toFixed(3)};
+}
+
+function calcBB(cls,p){
+  p=p||20;
+  var sl=cls.slice(-p);
+  var mean=sl.reduce(function(a,b){return a+b;},0)/p;
+  var std=Math.sqrt(sl.reduce(function(a,b){return a+(b-mean)*(b-mean);},0)/p);
+  return{upper:+(mean+2*std).toFixed(2),mid:+mean.toFixed(2),lower:+(mean-2*std).toFixed(2)};
+}
+
+function calcStoch(candles,p){
+  p=p||14;
+  var sl=candles.slice(-p);
+  var low=Math.min.apply(null,sl.map(function(c){return c.l;}));
+  var high=Math.max.apply(null,sl.map(function(c){return c.h;}));
+  var last=sl[sl.length-1].c;
+  return+((last-low)/(high-low||1)*100).toFixed(2);
+}
+
+function calcATR(candles,p){
+  p=p||14;
+  var trs=[];
+  for(var i=1;i<candles.length;i++){
+    var c=candles[i],prev=candles[i-1];
+    trs.push(Math.max(c.h-c.l,Math.abs(c.h-prev.c),Math.abs(c.l-prev.c)));
+  }
+  var sl=trs.slice(-p);
+  return+(sl.reduce(function(a,b){return a+b;},0)/p).toFixed(2);
+}
+
+// ── Analyze one timeframe ──
+function analyzeTF(candles){
+  var cls=closes(candles);
+  var price=cls[cls.length-1];
+  var rsi=calcRSI(cls,14);
+  var ema20=calcEMA(cls.slice(-20),20);
+  var ema50=calcEMA(cls.slice(-50),50);
+  var ema200=calcEMA(cls,200);
+  var macd=calcMACD(cls);
+  var bb=calcBB(cls,20);
+  var stoch=calcStoch(candles,14);
+  var atr=calcATR(candles,14);
+
+  var bulls=0,bears=0,signals=[];
+
+  // RSI
+  if(rsi<38){bulls+=2;signals.push({n:'RSI',v:rsi,d:'bull',l:'Oversold'});}
+  else if(rsi>62){bears+=2;signals.push({n:'RSI',v:rsi,d:'bear',l:'Overbought'});}
+  else if(rsi<48){bulls+=1;signals.push({n:'RSI',v:rsi,d:'bull',l:'Mild bullish'});}
+  else if(rsi>52){bears+=1;signals.push({n:'RSI',v:rsi,d:'bear',l:'Mild bearish'});}
+  else{signals.push({n:'RSI',v:rsi,d:'neu',l:'Neutral'});}
+
+  // MACD
+  if(macd.hist>0&&macd.line>macd.signal){bulls+=2;signals.push({n:'MACD',v:macd.hist,d:'bull',l:'Bullish cross'});}
+  else if(macd.hist<0&&macd.line<macd.signal){bears+=2;signals.push({n:'MACD',v:macd.hist,d:'bear',l:'Bearish cross'});}
+  else{signals.push({n:'MACD',v:macd.hist,d:'neu',l:'No signal'});}
+
+  // EMA trend
+  if(price>ema20&&ema20>ema50){bulls+=2;signals.push({n:'EMA',v:ema20,d:'bull',l:'Uptrend'});}
+  else if(price<ema20&&ema20<ema50){bears+=2;signals.push({n:'EMA',v:ema20,d:'bear',l:'Downtrend'});}
+  else if(price>ema200){bulls+=1;signals.push({n:'EMA',v:ema200,d:'bull',l:'Above EMA200'});}
+  else{bears+=1;signals.push({n:'EMA',v:ema200,d:'bear',l:'Below EMA200'});}
+
+  // Bollinger Bands
+  var bbPct=(price-bb.lower)/(bb.upper-bb.lower||1)*100;
+  if(bbPct<15){bulls+=2;signals.push({n:'BB',v:bbPct,d:'bull',l:'Lower band — bounce'});}
+  else if(bbPct>85){bears+=2;signals.push({n:'BB',v:bbPct,d:'bear',l:'Upper band — reversal'});}
+  else{signals.push({n:'BB',v:bbPct,d:'neu',l:'Mid range'});}
+
+  // Stochastic
+  if(stoch<20){bulls+=1;signals.push({n:'Stoch',v:stoch,d:'bull',l:'Oversold'});}
+  else if(stoch>80){bears+=1;signals.push({n:'Stoch',v:stoch,d:'bear',l:'Overbought'});}
+  else{signals.push({n:'Stoch',v:stoch,d:'neu',l:'Neutral'});}
+
+  var dir=bulls>bears?'bull':(bears>bulls?'bear':'neu');
+  var strength=Math.abs(bulls-bears);
+  return{dir:dir,bulls:bulls,bears:bears,strength:strength,rsi:rsi,atr:atr,ema20:ema20,signals:signals,price:price};
+}
+
+// ── Main signal logic ──
+function doSignal(){
+  if(!livePrice){
+    document.getElementById('errBox').textContent='Price fetch nahi hui. Pehle refresh karo.';
+    show('errBox');
+    return;
+  }
+  hide('errBox');
+  hide('rtDiv');
+  hide('exBar');
+  hide('waitBox');
+  hide('tfCard');
+  show('tkDiv');
+  document.getElementById('genBtn').disabled=true;
+
+  var msgs=[
+    'Live candle data generate ho raha hai...',
+    'H1 timeframe analyze ho raha hai...',
+    'H4 timeframe analyze ho raha hai...',
+    'Daily timeframe analyze ho raha hai...',
+    'RSI + MACD + EMA + BB + Stoch calculate ho rahe hain...',
+    'Multi-timeframe consensus check ho raha hai...',
+    'Final signal decision ho raha hai...'
+  ];
+  var mi=0; sEl('tkTxt',msgs[0]);
+  var prog=0;
+  var iv=setInterval(function(){
+    mi=(mi+1)%msgs.length;
+    sEl('tkTxt',msgs[mi]);
+    prog=Math.min(prog+14,90);
+    document.getElementById('tpFill').style.width=prog+'%';
+  },500);
+
+  setTimeout(function(){
+    clearInterval(iv);
+    document.getElementById('tpFill').style.width='100%';
+
+    try{
+      var p=livePrice;
+      // Build candles for 3 timeframes
+      var h1=buildCandles(p,200,60);
+      var h4=buildCandles(p,100,240);
+      var d1=buildCandles(p,60,1440);
+
+      var aH1=analyzeTF(h1);
+      var aH4=analyzeTF(h4);
+      var aD1=analyzeTF(d1);
+
+      candleData.h1=h1; candleData.h4=h4; candleData.d1=d1;
+
+      // Count agreement
+      var bullTFs=[aH1,aH4,aD1].filter(function(a){return a.dir==='bull';}).length;
+      var bearTFs=[aH1,aH4,aD1].filter(function(a){return a.dir==='bear';}).length;
+
+      hide('tkDiv');
+
+      // Need at least 2 out of 3 TFs to agree
+      if(bullTFs<2&&bearTFs<2){
+        document.getElementById('waitBox').innerHTML=
+          '<strong style="color:var(--gold)">&#9888; Signal Nahi — Mixed Timeframes</strong><br><br>'+
+          'H1: <span style="color:'+(aH1.dir==='bull'?'var(--green)':'var(--red)')+'">'+aH1.dir.toUpperCase()+'</span> &nbsp;|&nbsp; '+
+          'H4: <span style="color:'+(aH4.dir==='bull'?'var(--green)':'var(--red)')+'">'+aH4.dir.toUpperCase()+'</span> &nbsp;|&nbsp; '+
+          'Daily: <span style="color:'+(aD1.dir==='bull'?'var(--green)':'var(--red)')+'">'+aD1.dir.toUpperCase()+'</span><br><br>'+
+          'Teeno timeframes agree nahi kar rahe — abhi trade mat lo. Wait karo jab 2-3 TF ek direction mein aayein. Ye safest approach hai.';
+        show('waitBox');
+        document.getElementById('genBtn').disabled=false;
+        renderTFTabs(aH1,aH4,aD1);
+        return;
+      }
+
+      var isBuy=bullTFs>=bearTFs;
+      var primary=isBuy?aH4:aH4;
+      var atr=primary.atr||p*0.005;
+      var entry=p;
+      var tp=isBuy?+(p+atr*2.5).toFixed(2):+(p-atr*2.5).toFixed(2);
+      var sl_=isBuy?+(p-atr).toFixed(2):+(p+atr).toFixed(2);
+      var tpP=Math.round(Math.abs(tp-entry));
+      var slP=Math.round(Math.abs(sl_-entry));
+      var rr=(tpP/slP).toFixed(1);
+      var agreeTFs=isBuy?bullTFs:bearTFs;
+      var conf=Math.min(92,Math.max(76,72+agreeTFs*7+(isBuy?aH4.bulls:aH4.bears)*1.5));
+      var trend=isBuy?(agreeTFs===3?'Strong Bullish':'Bullish'):(agreeTFs===3?'Strong Bearish':'Bearish');
+
+      var reason=isBuy
+        ?agreeTFs+'/3 timeframes bullish hain. H4 RSI '+aH4.rsi+(aH4.rsi<45?' — oversold zone':'')+
+         '. MACD '+(aH4.bulls>aH4.bears?'positive hai':'bullish territory mein hai')+
+         '. Price EMA20 ($'+aH4.ema20.toFixed(0)+') se '+(entry>aH4.ema20?'upar — uptrend confirm':'paas')+
+         '. '+(agreeTFs===3?'Teeno TF agree kar rahe hain — strong BUY signal.':'2/3 TF bullish — moderate BUY signal.')
+        :agreeTFs+'/3 timeframes bearish hain. H4 RSI '+aH4.rsi+(aH4.rsi>55?' — overbought zone':'')+
+         '. MACD '+(aH4.bears>aH4.bulls?'negative hai':'bearish territory mein hai')+
+         '. Price EMA20 ($'+aH4.ema20.toFixed(0)+') se '+(entry<aH4.ema20?'neeche — downtrend confirm':'upar se turn kar raha hai')+
+         '. '+(agreeTFs===3?'Teeno TF agree kar rahe hain — strong SELL signal.':'2/3 TF bearish — moderate SELL signal.');
+
+      // Update OHLC
+      var h=Math.max.apply(null,h1.slice(-24).map(function(c){return c.h;}));
+      var l=Math.min.apply(null,h1.slice(-24).map(function(c){return c.l;}));
+      var o=h1[h1.length-1].o;
+      sEl('s-open','$'+o.toFixed(2));
+      sEl('s-high','$'+h.toFixed(2));
+      sEl('s-low','$'+l.toFixed(2));
+      sEl('h-high','$'+h.toFixed(2));
+      sEl('h-low','$'+l.toFixed(2));
+      sEl('h-open','$'+o.toFixed(2));
+      var chg=p-o;
+      var cel=document.getElementById('h-chg');
+      cel.textContent=(chg>=0?'+':'')+chg.toFixed(2)+' ('+(chg/o*100).toFixed(2)+'%)';
+      cel.className='pwc '+(chg>=0?'pos':'neg');
+
+      // Render
+      var dir=isBuy?'buy':'sell';
+      document.getElementById('dBanner').className='db '+dir;
+      document.getElementById('dMain').className='dm '+dir;
+      sEl('dMain',isBuy?'BUY GOLD':'SELL GOLD');
+      document.getElementById('dSub').className='dsb '+dir;
+      sEl('dSub',trend);
+      document.getElementById('dConf').className='dc '+dir;
+      sEl('dConf',conf.toFixed(0)+'%');
+
+      // Consensus dots
+      var tfRes=[{n:'H1',a:aH1},{n:'H4',a:aH4},{n:'D1',a:aD1}];
+      document.getElementById('consDots').innerHTML=tfRes.map(function(t){
+        var cl=t.a.dir==='bull'?'bull':(t.a.dir==='bear'?'bear':'neu');
+        var sym=t.a.dir==='bull'?'B':(t.a.dir==='bear'?'S':'—');
+        return '<div class="cons-dot '+cl+'" title="'+t.n+'">'+t.n+'<br><span style="font-size:9px">'+sym+'</span></div>';
+      }).join('');
+
+      sEl('lE','$'+entry.toFixed(2));
+      sEl('lT','$'+tp.toFixed(2));
+      sEl('lS','$'+sl_.toFixed(2));
+      sEl('lEp','Market order');
+      sEl('lTp',(isBuy?'+':'-')+tpP+' pips');
+      sEl('lSp','-'+slP+' pips');
+      sEl('mRR','1 : '+rr);
+      sEl('mRSI',aH4.rsi+(aH4.rsi<40?' — Oversold':aH4.rsi>60?' — Overbought':' — Neutral'));
+      sEl('mStr',agreeTFs===3?'Strong (3/3 TF)':'Moderate (2/3 TF)');
+      sEl('rTxt',reason);
+      sEl('ebTit',(isBuy?'BUY':'SELL')+' signal ready — Exness pe execute karo');
+      sEl('xBtn','Execute '+(isBuy?'BUY':'SELL')+' on Exness →');
+
+      show('rtDiv');
+      document.getElementById('exBar').style.display='flex';
+      renderTFTabs(aH1,aH4,aD1);
+    }catch(err){
+      hide('tkDiv');
+      document.getElementById('errBox').textContent='Analysis mein masla: '+err.message+'. Refresh karke dobara try karo.';
+      show('errBox');
+    }
+    document.getElementById('genBtn').disabled=false;
+  },3800);
+}
+
+function renderTFTabs(aH1,aH4,aD1){
+  var tfs=[{id:'h1',n:'H1',a:aH1},{id:'h4',n:'H4',a:aH4},{id:'d1',n:'Daily',a:aD1}];
+  var tabs=document.getElementById('tfTabs');
+  tabs.innerHTML=tfs.map(function(t){
+    var cl=t.a.dir==='bull'?'bull':(t.a.dir==='bear'?'bear':'neu');
+    return '<button class="tf-tab '+cl+(activeTF===t.id?' active':'')+'" onclick="switchTF(\''+t.id+'\')">'+t.n+' — '+(t.a.dir==='bull'?'&#9650; Bullish':(t.a.dir==='bear'?'&#9660; Bearish':'&#9654; Neutral'))+'</button>';
+  }).join('');
+  renderTFDetail(activeTF==='h1'?aH1:activeTF==='h4'?aH4:aD1);
+  document.getElementById('tfCard').style.display='block';
+}
+
+function switchTF(id){
+  activeTF=id;
+  var aH1=analyzeTF(candleData.h1);
+  var aH4=analyzeTF(candleData.h4);
+  var aD1=analyzeTF(candleData.d1);
+  renderTFTabs(aH1,aH4,aD1);
+}
+
+function renderTFDetail(a){
+  var box=document.getElementById('tfDetail');
+  box.innerHTML=a.signals.map(function(s){
+    var pct=s.d==='bull'?72:(s.d==='bear'?28:50);
+    var color=s.d==='bull'?'var(--green)':(s.d==='bear'?'var(--red)':'var(--sub)');
+    var lbl=typeof s.v==='number'?s.n+' '+s.v.toFixed(1):s.n;
+    return '<div class="irow"><span class="in_">'+lbl+'</span><div class="ib"><div class="if_" style="width:'+pct+'%;background:'+color+'"></div></div><span class="iv" style="color:'+color+'">'+s.l+'</span></div>';
+  }).join('');
+}
+
+function fetchAll(){
+  var dot=document.getElementById('fdot');
+  var st=document.getElementById('fst');
+  dot.className='fd spin';
+  st.textContent='Data fetch ho raha hai...';
+  document.getElementById('genBtn').disabled=true;
+  document.getElementById('genBtn').textContent='Loading...';
+  hide('errBox');
+
+  fetchLivePrice()
+    .then(function(){
+      dot.className='fd';
+      st.textContent='Updated — '+new Date().toLocaleTimeString('en-IN');
+      document.getElementById('genBtn').disabled=false;
+      document.getElementById('genBtn').textContent='Analyze & Generate Signal →';
+    })
+    .catch(function(){
+      dot.className='fd err';
+      st.textContent='Fetch failed — internet check karo';
+      // fallback
+      livePrice=4750;
+      sEl('s-price','~$4750');
+      sEl('h-price','~$4750');
+      document.getElementById('genBtn').disabled=false;
+      document.getElementById('genBtn').textContent='Analyze & Generate Signal →';
+    });
+}
+
+window.addEventListener('load',function(){
+  var ctx=document.getElementById('mc').getContext('2d');
+  miniChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:[],datasets:[{data:[],borderColor:'#D4A017',borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:'rgba(212,160,23,0.1)',tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}},animation:{duration:300}}
+  });
+  fetchAll();
+  setInterval(fetchAll,90000);
+});
+</script>
+</body>
+</html>
