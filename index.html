@@ -50,6 +50,9 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Outfit',
 .pbtn{padding:7px 4px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t2);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;text-align:center}
 .pbtn:active{background:var(--s2)}
 .pbtn.on{background:rgba(88,166,255,.12);color:var(--bl);border-color:rgba(88,166,255,.3)}
+.mbtn2{padding:8px 6px;border-radius:8px;border:1px solid var(--b1);background:transparent;color:var(--t2);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;text-align:center}
+.mbtn2:active{background:var(--s2)}
+.mbtn2.on{background:rgba(88,166,255,.12);color:var(--bl);border-color:rgba(88,166,255,.3)}
 .tog-row{display:flex;align-items:center;justify-content:space-between;padding:2px 0}
 .tog-lbl{font-size:12px;color:var(--t2)}
 .tog{width:34px;height:18px;background:var(--s3);border-radius:20px;position:relative;transition:background .2s;border:1px solid var(--b1);cursor:pointer;flex-shrink:0}
@@ -187,21 +190,23 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Outfit',
 <!-- SETTINGS PANEL -->
 <div id="sp">
   <div class="sp-inner">
-    <!-- Model + Tokens row -->
-    <div class="sp-row">
-      <div class="sp-item">
-        <label>Model</label>
-        <select id="mdl" onchange="syncMdl()">
-          <option value="mistral" selected>Mistral ⭐</option>
-          <option value="llama">Llama 3.3 70B</option>
-          <option value="mistral-large">Mistral Large</option>
-          <option value="openai-large">GPT-4o</option>
-          <option value="openai">GPT-4o Mini</option>
-          <option value="deepseek-r1">DeepSeek R1</option>
-          <option value="qwen-coder">Qwen Coder</option>
-          <option value="searchgpt">SearchGPT 🌐</option>
-        </select>
+    <!-- Model grid -->
+    <div>
+      <label style="display:block;font-size:10px;color:var(--t2);font-family:'Fira Code',monospace;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Model</label>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:4px">
+        <button class="mbtn2 on" data-m="mistral" onclick="setMdl('mistral')">Mistral ⭐</button>
+        <button class="mbtn2" data-m="openai-large" onclick="setMdl('openai-large')">GPT-4o</button>
+        <button class="mbtn2" data-m="openai" onclick="setMdl('openai')">GPT-4o Mini</button>
+        <button class="mbtn2" data-m="llama" onclick="setMdl('llama')">Llama 70B</button>
+        <button class="mbtn2" data-m="mistral-large" onclick="setMdl('mistral-large')">Mistral Large</button>
+        <button class="mbtn2" data-m="deepseek-r1" onclick="setMdl('deepseek-r1')">DeepSeek R1</button>
+        <button class="mbtn2" data-m="qwen-coder" onclick="setMdl('qwen-coder')">Qwen Coder</button>
+        <button class="mbtn2" data-m="searchgpt" onclick="setMdl('searchgpt')">SearchGPT 🌐</button>
       </div>
+    </div>
+    <input type="hidden" id="mdl" value="mistral">
+    <!-- Sliders row -->
+    <div class="sp-row">
       <div class="sp-item">
         <label>Max Tokens: <span class="sp-val" id="tkv">4096</span></label>
         <input type="range" min="512" max="8192" step="512" value="4096" id="tks"
@@ -213,16 +218,18 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Outfit',
           oninput="document.getElementById('tmpv').textContent=this.value">
       </div>
     </div>
-    <!-- Persona -->
+    <!-- Persona horizontal -->
     <div>
       <label style="display:block;font-size:10px;color:var(--t2);font-family:'Fira Code',monospace;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Persona</label>
-      <div class="pgrid" id="pgrid">
-        <button class="pbtn on" data-p="default" onclick="setPer(this)">🧠 Default</button>
-        <button class="pbtn" data-p="code" onclick="setPer(this)">💻 Code</button>
-        <button class="pbtn" data-p="research" onclick="setPer(this)">🔬 Research</button>
-        <button class="pbtn" data-p="creative" onclick="setPer(this)">✨ Creative</button>
-        <button class="pbtn" data-p="security" onclick="setPer(this)">🛡 Security</button>
-        <button class="pbtn" data-p="custom" onclick="setPer(this)">⚙ Custom</button>
+      <div style="overflow-x:auto;padding-bottom:6px">
+        <div style="display:flex;gap:4px;white-space:nowrap">
+        <button class="pbtn on" data-p="default" onclick="setPer(this)" style="flex-shrink:0">🧠 Default</button>
+        <button class="pbtn" data-p="code" onclick="setPer(this)" style="flex-shrink:0">💻 Code</button>
+        <button class="pbtn" data-p="research" onclick="setPer(this)" style="flex-shrink:0">🔬 Research</button>
+        <button class="pbtn" data-p="creative" onclick="setPer(this)" style="flex-shrink:0">✨ Creative</button>
+        <button class="pbtn" data-p="security" onclick="setPer(this)" style="flex-shrink:0">🛡 Security</button>
+        <button class="pbtn" data-p="custom" onclick="setPer(this)" style="flex-shrink:0">⚙ Custom</button>
+      </div>
       </div>
     </div>
     <!-- System prompt -->
@@ -242,6 +249,14 @@ html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Outfit',
       <div class="tog-row" style="gap:8px">
         <span class="tog-lbl">🔊 TTS</span>
         <div class="tog" id="t-tts" onclick="togF('tts')"></div>
+      </div>
+      <div class="tog-row" style="gap:8px">
+        <span class="tog-lbl">🤖 All Models</span>
+        <div class="tog" id="t-all" onclick="togF('all')"></div>
+      </div>
+      <div class="tog-row" style="gap:8px">
+        <span class="tog-lbl">🎭 All Personas</span>
+        <div class="tog" id="t-ap" onclick="togF('ap')"></div>
       </div>
     </div>
   </div>
@@ -310,7 +325,9 @@ const P = {
 
 // ── STATE ──
 let hist=[], busy=false, curId=null, micRec=null, ismic=false;
-const F={ad:false,tts:false};
+const F={ad:false,tts:false,all:false,ap:false};
+const MODELS=['mistral','openai-large','openai','llama','mistral-large','deepseek-r1','qwen-coder','searchgpt'];
+const PERSONAS_LIST=['default','code','research','creative','security','custom'];
 
 // ── MARKED ──
 marked.setOptions({breaks:true,gfm:true});
@@ -329,7 +346,19 @@ function rsz(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight
 function updCC(){document.getElementById('cc').textContent=document.getElementById('ui').value.length;}
 function scroll(){const m=document.getElementById('msgs');m.scrollTop=m.scrollHeight;}
 function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function syncMdl(){document.getElementById('mtag').textContent=document.getElementById('mdl').value;}
+function setMdl(m){
+  document.getElementById('mdl').value=m;
+  document.querySelectorAll('.mbtn2').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`.mbtn2[data-m="${m}"]`).classList.add('on');
+  document.getElementById('mtag').textContent=m;
+}
+function getM(){
+  const m=document.getElementById('mdl').value||'mistral';
+  // Map model names for compatibility
+  const maps={'o3-mini':'gpt-4o-mini','qwen-coder':'qwen-2.5-coder'};
+  return maps[m]||m;
+}
+function syncMdl(){setMdl(document.getElementById('mdl').value);}
 function getM(){return document.getElementById('mdl').value||'mistral';}
 function getTk(){return parseInt(document.getElementById('tks').value)||4096;}
 function getTmp(){return parseFloat(document.getElementById('tmp').value)||0.7;}
@@ -468,13 +497,33 @@ function parseResp(raw){
 }
 
 async function callAPI(){
-  const r=await fetch('https://text.pollinations.ai/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:getM(),messages:hist,system:getSys(),temperature:getTmp(),max_tokens:getTk(),stream:false})
-  });
-  if(!r.ok) throw new Error('Server: '+r.status);
-  return parseResp(await r.text());
+  const text = getSys() + '\n\nUser: ' + hist[hist.length-1].content;
+  
+  try {
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 15000)
+    );
+    
+    const promise = fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        inputs: text,
+        parameters: {
+          max_new_tokens: getTk(),
+          temperature: getTmp()
+        }
+      })
+    }).then(r => r.json()).then(data => {
+      if(data.error) throw new Error(data.error);
+      return data[0]?.generated_text || 'No response';
+    });
+    
+    const response = await Promise.race([promise, timeout]);
+    return response;
+  } catch(e) {
+    throw new Error('Server busy. Thodi der baad try karo.');
+  }
 }
 
 async function send(){
@@ -484,17 +533,168 @@ async function send(){
   busy=true;document.getElementById('sb').disabled=true;
   addUser(text);
   hist.push({role:'user',content:text});
-  addThink();
-  try{
-    const reply=await callAPI();
-    hist.push({role:'assistant',content:reply});
-    addAI(reply);saveChat();
-  }catch(err){
+  
+  if(F.all && F.ap) {
+    // All models + All personas
+    addThink();
+    const allResponses={};
+    const promises=[];
+    MODELS.forEach(m=>{
+      PERSONAS_LIST.forEach(p=>{
+        promises.push(
+          callAPIWithModelPersona(m,p).then(r=>{allResponses[m+'-'+p]=r;}).catch(e=>{allResponses[m+'-'+p]='❌ Error';})
+        );
+      });
+    });
+    await Promise.all(promises);
     rmThink();
-    addAI(err.message.includes('fetch')?'⚠️ **Connection Error**\n\nInternet check karo ya thodi der baad try karo.':'⚠️ **Error:** '+err.message);
+    
+    MODELS.forEach(m=>{
+      const c=document.getElementById('msgs');
+      const header=document.createElement('div');
+      header.style.cssText='padding:8px 14px;margin:4px 0 0;font-size:12px;font-weight:700;color:var(--bl);font-family:Fira Code';
+      header.textContent='🤖 '+m;
+      c.appendChild(header);
+      
+      PERSONAS_LIST.forEach(p=>{
+        const resp=allResponses[m+'-'+p]||'⏳';
+        const d=document.createElement('div');
+        d.className='msg ai';
+        d.innerHTML=`<div class="mi"><div class="ava">◈</div><div class="bwrap"><div style="font-size:10px;color:var(--t2);margin-bottom:3px;font-family:'Fira Code',monospace">🎭 ${p}</div><div class="bubble" style="padding:8px 11px;font-size:12px">${rnd(resp.slice(0,300))}</div></div></div>`;
+        c.appendChild(d);
+      });
+    });
+    scroll();
+    hist.push({role:'assistant',content:'[All Models+Personas Response]'});
+    saveChat();
+  } else if(F.all) {
+    // All models only
+    addThink();
+    const allResponses={};
+    const promises=MODELS.map(m=>
+      callAPIWithModel(m).then(r=>{allResponses[m]=r;}).catch(e=>{allResponses[m]='❌ Error';})
+    );
+    await Promise.all(promises);
+    rmThink();
+    
+    MODELS.forEach(m=>{
+      const resp=allResponses[m]||'⏳';
+      const c=document.getElementById('msgs'),d=document.createElement('div');
+      d.className='msg ai';
+      d.innerHTML=`<div class="mi"><div class="ava">◈</div><div class="bwrap"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-family:'Fira Code',monospace;text-transform:uppercase">🤖 ${m}</div><div class="bubble">${rnd(resp)}</div><div class="macts"><button class="abtn" onclick="cpBub(this)">copy</button></div></div></div>`;
+      c.appendChild(d);
+    });
+    scroll();
+    hist.push({role:'assistant',content:'[All Models Response]'});
+    saveChat();
+  } else if(F.ap) {
+    // All personas only
+    addThink();
+    const allResponses={};
+    const promises=PERSONAS_LIST.map(p=>
+      callAPIWithPersona(p).then(r=>{allResponses[p]=r;}).catch(e=>{allResponses[p]='❌ Error';})
+    );
+    await Promise.all(promises);
+    rmThink();
+    
+    PERSONAS_LIST.forEach(p=>{
+      const resp=allResponses[p]||'⏳';
+      const c=document.getElementById('msgs'),d=document.createElement('div');
+      d.className='msg ai';
+      d.innerHTML=`<div class="mi"><div class="ava">◈</div><div class="bwrap"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-family:'Fira Code',monospace;text-transform:uppercase">🎭 ${p}</div><div class="bubble">${rnd(resp)}</div><div class="macts"><button class="abtn" onclick="cpBub(this)">copy</button></div></div></div>`;
+      c.appendChild(d);
+    });
+    scroll();
+    hist.push({role:'assistant',content:'[All Personas Response]'});
+    saveChat();
+  } else {
+    // Single response
+    addThink();
+    try{
+      const reply=await callAPI();
+      hist.push({role:'assistant',content:reply});
+      addAI(reply);
+      saveChat();
+    }catch(err){
+      rmThink();
+      addAI(err.message.includes('fetch')?'⚠️ **Connection Error**\n\nInternet check karo ya thodi der baad try karo.':'⚠️ **Error:** '+err.message);
+    }
   }
+  
   busy=false;document.getElementById('sb').disabled=false;
   document.getElementById('ui').focus();
+}
+
+async function callAPIWithPersona(persona){
+  const text = (P[persona]||P.default) + '\n\nUser: ' + hist[hist.length-1].content;
+  try{
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 12000)
+    );
+    const promise = fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        inputs: text,
+        parameters: { max_new_tokens: getTk(), temperature: getTmp() }
+      })
+    }).then(r => r.json()).then(data => {
+      if(data.error) throw new Error('Error');
+      return data[0]?.generated_text || 'No response';
+    });
+    
+    return await Promise.race([promise, timeout]);
+  }catch(e){
+    return '⏳ Timeout';
+  }
+}
+
+async function callAPIWithModelPersona(model,persona){
+  const text = (P[persona]||P.default) + '\n\nUser: ' + hist[hist.length-1].content;
+  try{
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 12000)
+    );
+    const promise = fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        inputs: text,
+        parameters: { max_new_tokens: getTk(), temperature: getTmp() }
+      })
+    }).then(r => r.json()).then(data => {
+      if(data.error) throw new Error('Error');
+      return data[0]?.generated_text || 'No response';
+    });
+    
+    return await Promise.race([promise, timeout]);
+  }catch(e){
+    return '⏳ Timeout';
+  }
+}
+
+async function callAPIWithModel(model){
+  const text = getSys() + '\n\nUser: ' + hist[hist.length-1].content;
+  try{
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 12000)
+    );
+    const promise = fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        inputs: text,
+        parameters: { max_new_tokens: getTk(), temperature: getTmp() }
+      })
+    }).then(r => r.json()).then(data => {
+      if(data.error) throw new Error('Error');
+      return data[0]?.generated_text || 'No response';
+    });
+    
+    return await Promise.race([promise, timeout]);
+  }catch(e){
+    return '⏳ Timeout';
+  }
 }
 
 async function regen(){
